@@ -22,8 +22,8 @@ RUN pip install --upgrade pip \
 
 COPY . /app/
 
-# Make the entrypoint script executable
-RUN chmod +x /app/entrypoint.sh
+# Strip Windows line endings, then make executable
+RUN sed -i 's/\r$//' /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh
 
-# Set the entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

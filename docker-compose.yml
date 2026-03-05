@@ -1,6 +1,5 @@
 services:
   db:
-    # Using a specific, stable PostGIS version prevents unexpected crashes in production
     image: postgis/postgis:15-3.3
     container_name: safespot_db
     restart: always
@@ -23,9 +22,7 @@ services:
       - "6379:6379"
 
   web:
-    build:
-      context: .
-      network: host
+    build: .
     container_name: safespot_web
     restart: always
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
@@ -43,12 +40,9 @@ services:
       - safespot_network
 
   celery:
-    build:
-      context: .
-      network: host
+    build: .
     container_name: safespot_celery
     restart: always
-    # This command starts the background worker to handle the heavy math and scraper queues
     command: celery -A config worker -l INFO
     volumes:
       - .:/app
@@ -60,12 +54,10 @@ services:
     networks:
       - safespot_network
 
-# This tells Docker to persist your database data even if the containers are destroyed
 volumes:
   postgres_data:
   static_volume:
 
-# This connects these containers to the bridge network we created earlier
 networks:
   safespot_network:
     external: true
